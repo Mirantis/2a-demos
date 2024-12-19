@@ -10,4 +10,4 @@ spec:
   interval: 10m0s
   provider: generic
   type: oci
-  url: oci://ghcr.io/mirantis/2a-demo/charts
+  url: oci://ghcr.io/mirantis/2a-demos/charts

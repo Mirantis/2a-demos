@@ -12,6 +12,8 @@ All demos in here provide their own complete ClusterTemplates and ServiceTemplat
 
 The Setup part for Demos is assumed to be created once before an actual demo is given.
 
+Please make sure that docker is installed on your machine! It's required to run local kind cluster.
+
 ### General Setup
 
 1. Create a 2A Management cluster with kind:
@@ -26,9 +28,9 @@ The Setup part for Demos is assumed to be created once before an actual demo is 
     ```
     The Demos in this repo require at least 2A v0.0.5 or newer. You can change the version of the 2A by specifying the  
 
-3. Monitor the installation of 2A:
+3. Monitor the installation of 2A (you probably will need to install `jq` to execute this command):
     ```
-    kubectl get management hmc -o json | jq -r '.status.components | to_entries[] | "\(.key): \(.value.success // .value.error)"'
+    PATH=$PATH:./bin kubectl get management hmc -o json | jq -r '.status.components | to_entries[] | "\(.key): \(.value.success // .value.error)"'
     ```
     @TODO: document what the output should look like
 

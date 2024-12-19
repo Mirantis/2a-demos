@@ -47,7 +47,7 @@ help: ## Display this help.
 ##@ Binaries
 
 OS=$(shell uname | tr A-Z a-z)
-ifeq ($(shell uname -m),'x86_64') 
+ifeq ($(shell uname -m),x86_64) 
 	ARCH=amd64
 else
 	ARCH=arm64
@@ -73,10 +73,11 @@ $(LOCALBIN)/%: $(LOCALBIN)
 
 # checks if the binary exists in the PATH and installs it locally otherwise
 .check-binary-%:
-	@if ! builtin type -P "$(binary)" $ > /dev/null; then\
-		echo "Can't find the $(binary) in path, installing it locally";\
-		make $(LOCALBIN)/$(binary);\
-	fi;
+	@(which "$(binary)" $ > /dev/null || test -f $(LOCALBIN)/$(binary)) \
+		|| (echo "Can't find the $(binary) in path, installing it locally" && make $(LOCALBIN)/$(binary))
+
+.check-binary-docker:
+	@which docker $ > /dev/null || (echo "Please install docker before proceeding" && exit 1)
 
 %kind: binary = kind
 %kind: url = "https://kind.sigs.k8s.io/dl/v$(KIND_VERSION)/kind-$(OS)-$(ARCH)"
@@ -119,13 +120,13 @@ $(LOCALBIN)/helm: | $(LOCALBIN)
 ##@ Bootstrap and setup kubernetes management cluster
 
 .PHONY: bootstrap-kind-cluster
-bootstrap-kind-cluster: .check-binary-kind .check-binary-kubectl ## Provision local kind cluster
+bootstrap-kind-cluster: .check-binary-docker .check-binary-kind .check-binary-kubectl ## Provision local kind cluster
 	@if $(KIND) get clusters | grep -q $(KIND_CLUSTER_NAME); then\
 		echo "$(KIND_CLUSTER_NAME) kind cluster already installed";\
 	else\
 		$(KIND) create cluster --name=$(KIND_CLUSTER_NAME);\
 	fi
-	@PATH=$(KUBECTL) config use-context kind-$(KIND_CLUSTER_NAME)
+	@$(KUBECTL) config use-context kind-$(KIND_CLUSTER_NAME)
 
 .PHONY: deploy-2a
 deploy-2a: .check-binary-helm ## Deploy 2A to the management cluster

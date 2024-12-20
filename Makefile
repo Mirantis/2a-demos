@@ -12,8 +12,7 @@ ENVSUBST_VERSION ?= v1.4.2
 GOLANGCI_LINT = $(LOCALBIN)/golangci-lint-$(GOLANGCI_LINT_VERSION)
 GOLANGCI_LINT_VERSION ?= v1.61.0
 
-
-
+OPENSSL_DOCKER_IMAGE ?= alpine/openssl:3.3.2
 
 TEMPLATES_DIR := templates
 TEMPLATE_FOLDERS = $(patsubst $(TEMPLATES_DIR)/%,%,$(wildcard $(TEMPLATES_DIR)/*))
@@ -432,13 +431,13 @@ certs/ca/ca.key:
 
 certs/platform-engineer1/platform-engineer1.key:
 	mkdir -p certs/platform-engineer1
-	openssl genrsa -out certs/platform-engineer1/platform-engineer1.key 2048
+	docker run -v ./certs:/certs $(OPENSSL_DOCKER_IMAGE) genrsa -out /certs/platform-engineer1/platform-engineer1.key 2048
 
 certs/platform-engineer1/platform-engineer1.csr: certs/platform-engineer1/platform-engineer1.key
-	openssl req -new -key certs/platform-engineer1/platform-engineer1.key -out certs/platform-engineer1/platform-engineer1.csr -subj '/CN=platform-engineer1/O=$(TARGET_NAMESPACE)'
+	docker run -v ./certs:/certs $(OPENSSL_DOCKER_IMAGE) req -new -key /certs/platform-engineer1/platform-engineer1.key -out /certs/platform-engineer1/platform-engineer1.csr -subj '/CN=platform-engineer1/O=$(TARGET_NAMESPACE)'
 
 certs/platform-engineer1/platform-engineer1.crt: certs/platform-engineer1/platform-engineer1.csr certs/ca/ca.crt certs/ca/ca.key
-	openssl x509 -req -in certs/platform-engineer1/platform-engineer1.csr -CA certs/ca/ca.crt -CAkey certs/ca/ca.key -CAcreateserial -out certs/platform-engineer1/platform-engineer1.crt -days 360
+	docker run -v ./certs:/certs $(OPENSSL_DOCKER_IMAGE) x509 -req -in /certs/platform-engineer1/platform-engineer1.csr -CA /certs/ca/ca.crt -CAkey /certs/ca/ca.key -CAcreateserial -out /certs/platform-engineer1/platform-engineer1.crt -days 360
 
 .PHONY: clean-certs
 clean-certs:

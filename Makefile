@@ -440,6 +440,15 @@ certs/platform-engineer1/platform-engineer1.csr: certs/platform-engineer1/platfo
 certs/platform-engineer1/platform-engineer1.crt: certs/platform-engineer1/platform-engineer1.csr certs/ca/ca.crt certs/ca/ca.key
 	openssl x509 -req -in certs/platform-engineer1/platform-engineer1.csr -CA certs/ca/ca.crt -CAkey certs/ca/ca.key -CAcreateserial -out certs/platform-engineer1/platform-engineer1.crt -days 360
 
+.PHONY: cleanup-clusters
+cleanup-clusters: clean-certs
+	# use the explicit --context option to be specific about which cluster should be used to prevent disaster
+	kubectl --context=kind-$(KIND_CLUSTER_NAME) delete managedclusters.hmc.mirantis.com -n $(HMC_NAMESPACE) --all
+
+.PHONY: cleanup
+cleanup: cleanup-clusters clean-certs
+	$(KIND) delete cluster --name=$(KIND_CLUSTER_NAME);
+
 .PHONY: clean-certs
 clean-certs:
 	rm -rf certs/ca

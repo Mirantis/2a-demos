@@ -292,5 +292,14 @@ This demo is currently broken in HMC 0.0.5 until [#818](https://github.com/Miran
 
 ## Demo 10: Use ServiceTemplate in separate Namespace
 
+## Cleaning up
 
+To clean up the resources created on the public cloud providers, run the following command
+```shell
+   make cleanup-clusters
+```
 
+As running the whole 2a setup can be quite taxing on your hardware, run the following command to clean up everything (both the public cloud resources mentioned above but also all local containers):
+```shell
+   make cleanup
+```

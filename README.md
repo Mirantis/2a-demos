@@ -11,6 +11,7 @@ All demos in here provide their own complete ClusterTemplates and ServiceTemplat
 ## Table of Contents
 
 1. [Setup](#setup)
+   1. [Supported Operating Systems](#supported-operating-systems)
    1. [Prerequisites](#prerequisites)
    1. [General setup](#general-setup)
    1. [Infrastructure setup](#infra-setup)
@@ -28,8 +29,13 @@ All demos in here provide their own complete ClusterTemplates and ServiceTemplat
 1. [Demo 9: Approve ServiceTemplate in separate Namespace](#demo-9-approve-servicetemplate-in-separate-namespace)
 1. [Demo 10: Use ServiceTemplate in separate Namespace](#demo-10-use-servicetemplate-in-separate-namespace)
 1. [Cleaning up](#cleaning-up)
+1. [Appendix: Installation and Clean up on Non-Kind Clusters](./documentation/4-general-install-removal-non-kind.md).
 
 ## Setup
+
+### Supported Operating Systems
+
+This demo is intended for UNIX-like systems such as Linux (e.g., Ubuntu, RHEL, etc.) or macOS. While this might work under other environments, it has not been tested or officially supported. For the most reliable experience, we recommend using Linux or macOS.
 
 ### Prerequisites
 
@@ -67,7 +73,9 @@ To get the full list of commands run `make help`.
 > Expected completion time ~10 min
 
 > **Check Docker 'kind' network**  
-> The default Docker network for `kind` sometimes conflicts if it is created with a `172.18.0.0/16` subnet.  
+> The default, the Docker network for `kind` may be created with a `172.18.0.0/16` subnet.
+> In some environments, this can conflict with a cloud provider or internal infrastructure using the `172.18.x.x` range.
+> For instance, if your OpenStack API endpoint uses `172.18.x.x`, this overlapping subnet will cause connectivity issues.
 > To avoid issues, remove or recreate the `kind` network with a different subnet **before** bootstrapping your cluster:
 >
 > ```shell
@@ -84,7 +92,7 @@ To get the full list of commands run `make help`.
 > docker network create kind --subnet=10.24.0.0/16
 > ```
 >
-> Once the `kind` network is ready, continue with the [bootstrap-kind-cluster](#) step.
+> Once the `kind` network is ready, continue with the next step "Create a k0rdent Management cluster with kind".
 
 1. Create a k0rdent Management cluster with kind:
     ```shell
@@ -140,7 +148,7 @@ To get the full list of commands run `make help`.
 
 ### Infra Setup
 
-As next you need to decide into which infrastructure you would like to install the Demo clusters. This Demo Repo has support for the following Infra Providers (more to follow in the future):
+Next, choose the infrastructure provider where you would like to install the Demo clusters. This Demo Repo has support for the following Infra Providers (more to follow in the future):
 
 - AWS
 - Azure
@@ -197,8 +205,6 @@ This assumes that you already have configured the required [AWS IAM Roles](https
     ```
 
 #### Azure Setup
-
-**Currently demos don't have Azure cluster deployments, so you can skip this section**
 
 > Expected completion time ~2 min
 
